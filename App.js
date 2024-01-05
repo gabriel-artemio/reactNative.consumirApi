@@ -1,42 +1,22 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text } from 'react-native';
 
 const App = () => {
-  const [nome, setNome] = useState('');
-  const [idade, setIdade] = useState('');
+  const [registros, setRegistros] = useState([]);
 
-  const handleInserirRegistro = () => {
-    fetch('http://seu_ip:3000/inserirRegistro', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ nome, idade }),
-    })
-    .then(response => {
-      if (response.status === 201) {
-        console.log('Registro inserido com sucesso');
-        // Atualize a lista de registros, se necessário
-      } else {
-        console.error('Erro ao inserir registro');
-      }
-    })
-    .catch(error => console.error('Erro na solicitação:', error));
-  };
+  useEffect(() => {
+    fetch('http://localhost:3000/listarRegistros')
+      .then(response => response.json())
+      .then(data => setRegistros(data))
+      .catch(error => console.error('Erro ao buscar dados:', error));
+  }, []);
 
   return (
     <View>
-      <TextInput
-        placeholder="Nome"
-        value={nome}
-        onChangeText={text => setNome(text)}
-      />
-      <TextInput
-        placeholder="Idade"
-        value={idade}
-        onChangeText={text => setIdade(text)}
-      />
-      <Button title="Inserir Registro" onPress={handleInserirRegistro} />
+      <Text>Lista de Ferramentas</Text>
+      {registros && registros.map(registro => (
+        <Text key={registro.FerramentaID}><b>Cód. : </b>{registro.FerramentaID} - <b>Nome: </b>{registro.Nome}</Text>
+      ))}
     </View>
   );
 };
